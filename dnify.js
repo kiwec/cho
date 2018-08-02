@@ -1,8 +1,8 @@
 
 let client = null;
 
-const characters = [
-	// ['a', '<a_:snowflakeid>'],
+let characters = [
+	// [/a(?![^<]*>)/g, 'a_'],
 ];
 
 function init(cl) {
@@ -11,24 +11,18 @@ function init(cl) {
 	// Prints the list of server emojis in array format
 	console.log('\nPrinting available emojis...');
 	for(let emoji of client.emojis.array()) {
-		console.log("['" + emoji.name.slice(0, -1) + "', '<" + emoji.identifier + ">'],");
+		console.log(`[/${emoji.name.slice(0, -1)}(?![^<]*>)/g, '${emoji.name}'],`);
 	}
 
 	console.log('\nChecking required emotes availability...');
-	let emojis = client.emojis.array();
 	for(let character of characters) {
-		let valid = false;
+		// TODO get emotes from one guild only
+		// client.guilds.array()['guild_id'].emojis
+		let emoji = client.emojis.find('name', character[1]);
+		if(!emoji)
+			throw new Error(`Character ${character[1]} is missing emoji`);
 
-		for(let emoji of emojis) {
-			if(character[1] == '<' + emoji.identifier + '>') {
-				valid = true;
-				break;
-			}
-		}
-
-		if(!valid) {
-			throw new Error(`Character ${character[0]} is missing emoji ${character[1]}`);
-		}
+		character[2] = emoji;
 	}
 	console.log('All required emotes exist.');
 }
@@ -38,14 +32,18 @@ function replace(msg) {
 		throw new Error('Dnify has not been initialized. Call dnify.init before dnify.replace.');
 	}
 
-	let newmsg = msg.content;
+	let base = msg.content.toLowerCase().substring(6);
+	let newmsg = base;
 	for(let replacement of characters) {
-		newmsg = newmsg.replace(replacement[0], replacement[1]);
+		newmsg = newmsg.replace(replacement[0], replacement[2]);
 	}
 
-	if(msg.content != newmsg) {
+	if(base == newmsg) {
+		console.log(`Nothing to dnify in ${msg.author.username}'s message of id ${msg.id}`);
+	} else {
 		console.log(`Dnified ${msg.author.username}'s message of id ${msg.id}`);
-		msg.edit(newmsg);
+		msg.channel.send(`<${msg.author.username}> ${newmsg}`);
+		msg.delete();
 	}
 }
 
