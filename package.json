@@ -1,0 +1,29 @@
+{
+  "name": "cho",
+  "version": "1.0.0",
+  "description": "Discord bot for the Starry Expanse server.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kiwec/cho.git"
+  },
+  "keywords": [
+    "cho",
+    "discord",
+    "bot",
+    "dni",
+    "myst"
+  ],
+  "author": "kiwec",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/kiwec/cho/issues"
+  },
+  "homepage": "https://github.com/kiwec/cho#readme",
+  "dependencies": {
+    "discord.js": "^11.3.2"
+  }
+}
