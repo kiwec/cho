@@ -1,60 +1,37 @@
+const Discord = require('discord.js');
+const text2png = require('text2png');
 
 let client = null;
 
 let characters = [
-	[/'(?![^<]*>)/g, 'aps_'],
-	[/\.(?![^<]*>)/g, 'period_'],
-	[/th(?![^<]*>)/g, 'th_'],
-	[/ih(?![^<]*>)/g, 'ih_'],
-	[/ah(?![^<]*>)/g, 'ah_'],
-	[/dh(?![^<]*>)/g, 'dh_'],
-	[/ee(?![^<]*>)/g, 'ee_'],
-	[/ch(?![^<]*>)/g, 'ch_'],
-	[/ay(?![^<]*>)/g, 'ay_'],
-	[/sh(?![^<]*>)/g, 'sh_'],
-	[/oy(?![^<]*>)/g, 'oy_'],
-	[/oo(?![^<]*>)/g, 'oo_'],
-	[/j(?![^<]*>)/g, 'j_'],
-	[/h(?![^<]*>)/g, 'h_'],
-	[/f(?![^<]*>)/g, 'f_'],
-	[/m(?![^<]*>)/g, 'm_'],
-	[/a(?![^<]*>)/g, 'a_'],
-	[/b(?![^<]*>)/g, 'b_'],
-	[/d(?![^<]*>)/g, 'd_'],
-	[/s(?![^<]*>)/g, 's_'],
-	[/g(?![^<]*>)/g, 'g_'],
-	[/e(?![^<]*>)/g, 'e_'],
-	[/i(?![^<]*>)/g, 'i_'],
-	[/w(?![^<]*>)/g, 'w_'],
-	[/x(?![^<]*>)/g, 'x_'],
-	[/n(?![^<]*>)/g, 'n_'],
-	[/o(?![^<]*>)/g, 'o_'],
-	[/p(?![^<]*>)/g, 'p_'],
-	[/r(?![^<]*>)/g, 'r_'],
-	[/k(?![^<]*>)/g, 'k_'],
-	[/c(?![^<]*>)/g, 'c_'],
-	[/l(?![^<]*>)/g, 'l_'],
-	[/u(?![^<]*>)/g, 'u_'],
-	[/z(?![^<]*>)/g, 'z_'],
-	[/y(?![^<]*>)/g, 'y_'],
-	[/v(?![^<]*>)/g, 'v_'],
-	[/t(?![^<]*>)/g, 't_'],
+	[/th(?![^<]*>)/g, 'T'],
+	[/ih(?![^<]*>)/g, 'i'],
+	[/ah(?![^<]*>)/g, 'a'],
+	[/dh(?![^<]*>)/g, 'd'],
+	[/ee(?![^<]*>)/g, 'E'],
+	[/ch(?![^<]*>)/g, 'c'],
+	[/ts(?![^<]*>)/g, 'x'],
+	[/ay(?![^<]*>)/g, 'A'],
+	[/ai(?![^<]*>)/g, 'A'],
+	[/sh(?![^<]*>)/g, 'S'],
+	[/oy(?![^<]*>)/g, 'O'],
+	[/oo(?![^<]*>)/g, 'U'],
+	[/a(?![^<]*>)/g, 'å'],
+	[/d(?![^<]*>)/g, 'D'],
 ];
 
 function init(cl) {
 	client = cl;
+}
 
-	console.log('\nChecking required emotes availability...');
-	for(let character of characters) {
-		// TODO get emotes from one guild only
-		// client.guilds.array()['guild_id'].emojis
-		let emoji = client.emojis.find('name', character[1]);
-		if(!emoji)
-			throw new Error(`Character ${character[1]} is missing emoji`);
-
-		character[2] = emoji;
+function toDnifont(OTS) {
+	let newmsg = OTS;
+	for(let replacement of characters) {
+		newmsg = newmsg.replace(replacement[0], replacement[1]);
 	}
-	console.log('All required emotes exist.');
+	newmsg = newmsg.replace(/[<>]/g, '');
+
+	return newmsg;
 }
 
 function replace(msg) {
@@ -63,18 +40,19 @@ function replace(msg) {
 	}
 
 	let base = msg.content.toLowerCase().substring(6);
-	let newmsg = base;
-	for(let replacement of characters) {
-		newmsg = newmsg.replace(replacement[0], replacement[2]);
-	}
+	let newmsg = toDnifont(base);
+	let image = text2png(newmsg, {
+		font: '18px Dnifont',
+		textColor: 'black',
+		bgColor: 'white',
+		padding: 10,
+		output: 'buffer'
+	});
 
-	if(base == newmsg) {
-		console.log(`Nothing to dnify in ${msg.author.username}'s message of id ${msg.id}`);
-	} else {
-		console.log(`Dnified ${msg.author.username}'s message of id ${msg.id}`);
-		msg.channel.send(`<${msg.author.username}> ${newmsg}`);
-		msg.delete();
-	}
+	console.log(`Dnified ${msg.author.username}'s message of id ${msg.id}`);
+	let attachment = new Discord.Attachment(image, '${msg.author.username}\'s text.png');
+	msg.channel.send(`${msg.author.username} said : `, attachment);
+	msg.delete();
 }
 
 module.exports = { init, replace };

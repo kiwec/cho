@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/kiwec/cho#readme",
   "dependencies": {
-    "discord.js": "^11.3.2"
+    "discord.js": "^11.3.2",
+    "text2png": "^1.1.1"
   }
 }
