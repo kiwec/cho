@@ -90,8 +90,13 @@ function replace(msg) {
 
 	console.log(`Dnified ${msg.author.username}'s message of id ${msg.id}`);
 	let attachment = new Discord.Attachment(image, `${msg.author.username}'s text.png`);
-	msg.channel.send(`${msg.author.username} said : `, attachment);
-	msg.delete();
+
+	if(msg.guild.me.hasPermission('MANAGE_MESSAGES')) {
+		msg.channel.send(`${msg.author.username} said : `, attachment);
+		msg.delete();
+	} else {
+		msg.channel.send('', attachment);
+	}
 }
 
 module.exports = { init, replace };
