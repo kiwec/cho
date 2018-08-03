@@ -37,6 +37,10 @@ function toBase25(base10) {
 
 // Must be called before XtoDnifont for color handling
 function miscToDnifont(text) {
+	// Fix uppercase being detected as dnifont
+	// Later : maybe check for uppercase instead ? TODO
+	text = text.toLowerCase();
+
 	// Replace numbers by their base25 symbol
 	text = text.replace(/\d+/g, match => toBase25(parseInt(match, 10)));
 
