@@ -1,34 +1,6 @@
 const Discord = require('discord.js');
 const text2png = require('text2png');
 
-let client = null;
-
-let characters = [
-	[/ah(?![^<]*>)/g, '<a>'],
-	[/ai(?![^<]*>)/g, '<A>'],
-	[/ay(?![^<]*>)/g, '<A>'],
-	[/ch(?![^<]*>)/g, '<c>'],
-	[/dh(?![^<]*>)/g, '<d>'],
-	[/ee(?![^<]*>)/g, '<E>'],
-	[/eh(?![^<]*>)/g, '<e>'],
-	[/ih(?![^<]*>)/g, '<i>'],
-	[/kh(?![^<]*>)/g, '<k>'],
-	[/oo(?![^<]*>)/g, '<U>'],
-	[/oy(?![^<]*>)/g, '<O>'],
-	[/sh(?![^<]*>)/g, '<S>'],
-	[/th(?![^<]*>)/g, '<T>'],
-	[/ts(?![^<]*>)/g, '<x>'],
-	[/uh(?![^<]*>)/g, '<u>'],
-	[/a(?![^<]*>)/g, '<å>'],
-	[/d(?![^<]*>)/g, '<D>'],
-	[/í(?![^<]*>)/g, '<I>'],
-	[/k(?![^<]*>)/g, '<K>'],
-];
-
-function init(cl) {
-	client = cl;
-}
-
 function toBase25(base10) {
 	if(base10 == '25') {
 		return '|';
@@ -37,6 +9,7 @@ function toBase25(base10) {
 	// Convert to base 25... Easier than expected
 	let str = base10.toString(25);
 
+	// Numerals differ slightly in dniscript TODO
 	let table = [
 		[/a(?![^<]*>)/g, ')'],
 		[/b(?![^<]*>)/g, '!'],
@@ -62,25 +35,96 @@ function toBase25(base10) {
 	return str;
 }
 
-function toDnifont(OTS) {
-	let newmsg = OTS;
-	for(let replacement of characters) {
-		newmsg = newmsg.replace(replacement[0], replacement[1]);
-	}
-	newmsg = newmsg.replace(/[<>]/g, '');
-	newmsg = newmsg.replace(/\d+/g, match => toBase25(parseInt(match, 10)));
+// Must be called before XtoDnifont for color handling
+function miscToDnifont(text) {
+	// Replace numbers by their base25 symbol
+	text = text.replace(/\d+/g, match => toBase25(parseInt(match, 10)));
 
-	return newmsg;
+	/*
+	 * // Commented : this is D'ni Script, not Dnifont
+	 * // TODO switch to dniscript maybe ?
+	 *
+	// Replace colors by their rivenese symbol
+	text = text.replace(/red/g, '<ä>');
+	text = text.replace(/orange/g, '<Ä>');
+	text = text.replace(/yellow/g, '<ö>');
+	text = text.replace(/green/g, '<Ö>');
+	text = text.replace(/blue/g, '<ü>');
+	text = text.replace(/purple/g, '<Ü>');
+	*/
+
+	return text;
 }
 
-function replace(msg) {
-	if(!client) {
-		throw new Error('Dnify has not been initialized. Call dnify.init before dnify.replace.');
-	}
+function NTStoDnifont(text) {
+	text = miscToDnifont(text);
 
-	let base = msg.content.toLowerCase().substring(6);
-	let newmsg = toDnifont(base);
-	let image = text2png(newmsg, {
+	const characters = [
+		[/ay(?![^<]*>)/g, '<A>'],
+		[/ih(?![^<]*>)/g, '<i>'],
+		[/á(?![^<]*>)/g, '<I>'],
+		[/a(?![^<]*>)/g, '<a>'],
+		[/æ(?![^<]*>)/g, '<å>'], // would be q in dniscript TODO
+		[/c(?![^<]*>)/g, '<x>'],
+		[/ç(?![^<]*>)/g, '<c>'],
+		[/d(?![^<]*>)/g, '<D>'],
+		[/e(?![^<]*>)/g, '<e>'],
+		[/é(?![^<]*>)/g, '<A>'],
+		[/í(?![^<]*>)/g, '<E>'],
+		[/k(?![^<]*>)/g, '<K>'],
+		[/ð(?![^<]*>)/g, '<d>'],
+		[/ó(?![^<]*>)/g, '<O>'],
+		[/š(?![^<]*>)/g, '<S>'],
+		[/u(?![^<]*>)/g, '<u>'],
+		[/ú(?![^<]*>)/g, '<U>'],
+		[/x(?![^<]*>)/g, '<k>'],
+		[/þ(?![^<]*>)/g, '<T>'],
+		[/~(?![^<]*>)/g, '<->'],
+	];
+
+	for(let replacement of characters) {
+		text = text.replace(replacement[0], replacement[1]);
+	}
+	text = text.replace(/[<>]/g, '');
+
+	return text;
+}
+
+function OTStoDnifont(text) {
+	text = miscToDnifont(text);
+
+	const characters = [
+		[/ah(?![^<]*>)/g, '<a>'],
+		[/ai(?![^<]*>)/g, '<A>'],
+		[/ay(?![^<]*>)/g, '<A>'],
+		[/ch(?![^<]*>)/g, '<c>'],
+		[/dh(?![^<]*>)/g, '<d>'],
+		[/ee(?![^<]*>)/g, '<E>'],
+		[/eh(?![^<]*>)/g, '<e>'],
+		[/ih(?![^<]*>)/g, '<i>'],
+		[/kh(?![^<]*>)/g, '<k>'],
+		[/oo(?![^<]*>)/g, '<U>'],
+		[/oy(?![^<]*>)/g, '<O>'],
+		[/sh(?![^<]*>)/g, '<S>'],
+		[/th(?![^<]*>)/g, '<T>'],
+		[/ts(?![^<]*>)/g, '<x>'],
+		[/uh(?![^<]*>)/g, '<u>'],
+		[/a(?![^<]*>)/g, '<å>'], // would be q in dniscript TODO
+		[/d(?![^<]*>)/g, '<D>'],
+		[/í(?![^<]*>)/g, '<I>'],
+		[/k(?![^<]*>)/g, '<K>'],
+	];
+
+	for(let replacement of characters) {
+		text = text.replace(replacement[0], replacement[1]);
+	}
+	text = text.replace(/[<>]/g, '');
+
+	return text;
+}
+
+function replaceMsg(msg, text) {
+	let image = text2png(text, {
 		font: '18px Dnifont',
 		textColor: 'black',
 		bgColor: 'white',
@@ -99,5 +143,5 @@ function replace(msg) {
 	}
 }
 
-module.exports = { init, replace };
+module.exports = { toBase25, OTStoDnifont, NTStoDnifont, replaceMsg };
 
