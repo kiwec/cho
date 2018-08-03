@@ -6,9 +6,9 @@ const dnify = require('./dnify.js');
 client.on('ready', () => {
 	console.log(`Logged in as ${client.user.tag}`);
 
-	console.log('\nAvailable guilds :');
-	for(let guild of client.guilds.array()) {
-		console.log(guild.name + ' : ' + guild.id);
+	let starry_expanse = client.guilds.find('id', '434645974346891267');
+	if(!starry_expanse) {
+		console.log('Starry Expanse guild not found ! :(');
 	}
 
 	try {
