@@ -2,11 +2,10 @@
 
 Discord bot for the Starry Expanse server.
 
-### Running
+### Installing
 
 ```sh
 npm install
-node index.js
 ```
 
 Create config.json as such :
@@ -19,4 +18,12 @@ Create config.json as such :
 
 node-canvas requires some dependencies you have to install manually.
 Follow [these instructions](https://github.com/Automattic/node-canvas/wiki) for more information.
+
+You'll also need to install [Dnifont](http://urufont.orangehairedboy.com/Dni.ttf).
+
+### Running
+
+```sh
+node index.js
+```
 
