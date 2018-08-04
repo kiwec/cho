@@ -16,10 +16,10 @@ Create config.json as such :
 }
 ```
 
-python-shell requires python2.
-
 node-canvas requires some dependencies you have to install manually.
 Follow [these instructions](https://github.com/Automattic/node-canvas/wiki) for more information.
+
+python2 and python3 are required. Default python interpreter doesn't matter.
 
 You'll also need to install [Dnifont](http://urufont.orangehairedboy.com/Dni.ttf).
 
