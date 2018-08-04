@@ -1,0 +1,3 @@
+[submodule "DniTools"]
+	path = DniTools
+	url = https://github.com/plancsar/DniTools.git

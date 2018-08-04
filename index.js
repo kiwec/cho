@@ -1,7 +1,19 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
 
+const PythonShell = require('python-shell');
+
 const dnify = require('./dnify.js');
+
+function python(script, args, cb) {
+	PythonShell.run(script, {
+		mode: 'text',
+		pythonPath: '/usr/bin/python2',
+		pythonOptions: ['-u'],
+		scriptPath: 'DniTools',
+		args: args
+	}, cb);
+}
 
 client.on('ready', () => {
 	console.log(`Logged in as ${client.user.tag}`);
@@ -35,6 +47,10 @@ client.on('message', msg => {
 						{
 							name: '!dni nts text',
 							value: 'Converts text to D\'ni characters using NTS format.'
+						},
+						{
+							name: '!dni time',
+							value: 'Shows current D\ni time.'
 						}
 					]
 				}
@@ -45,6 +61,16 @@ client.on('message', msg => {
 				args.shift(1);
 				let text = dnify.NTStoDnifont(args.join(' '));
 				dnify.replaceMsg(msg, text);
+			} else if(args[0].toLowerCase() == 'time') {
+				python('dnitime.py', null, (err, res) => {
+					if(err) {
+						msg.channel.send('Sorry, something unexpected happened.');
+						console.error(err);
+						return;
+					}
+
+					msg.channel.send(res);
+				});
 			} else {
 				if(args[0].toLowerCase() == 'ots') {
 					args.shift(1);
