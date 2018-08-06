@@ -1,6 +1,26 @@
 const Discord = require('discord.js');
 const text2png = require('text2png');
 
+// text : text to modify
+// characters : array of [regex, replacement]
+// clean : if true, remove < and > from text
+function replace(text, characters, clean) {
+	for(let replacement of characters) {
+		text = text.replace(replacement[0], replacement[1]);
+	}
+
+	if(clean) {
+		text = text.replace(/[<>]/g, '');
+	}
+
+	return text;
+}
+
+// Sets characters not in between < and > to lowercase
+function lower(text) {
+	return text.replace(/[[:upper:]]+(?![^<]*>)/g, match => match.toLowerCase());
+}
+
 function toBase25(base10) {
 	if(base10 == '25') {
 		return '|';
@@ -8,9 +28,7 @@ function toBase25(base10) {
 
 	// Convert to base 25... Easier than expected
 	let str = base10.toString(25);
-
-	// Numerals differ slightly in dniscript TODO
-	let table = [
+	return replace(str, [
 		[/a(?![^<]*>)/g, ')'],
 		[/b(?![^<]*>)/g, '!'],
 		[/c(?![^<]*>)/g, '@'],
@@ -26,47 +44,56 @@ function toBase25(base10) {
 		[/m(?![^<]*>)/g, '\\'],
 		[/n(?![^<]*>)/g, '{'],
 		[/o(?![^<]*>)/g, '}'],
-	];
-
-	for(let number of table) {
-		str = str.replace(number[0], number[1]);
-	}
-
-	return str;
+	]);
 }
 
-// Must be called before XtoDnifont for color handling
-function miscToDnifont(text) {
-	// Fix uppercase being detected as dnifont
-	// Later : maybe check for uppercase instead ? TODO
-	text = text.toLowerCase();
+function toDniscript(text, format) {
+	// Replace colors by their rivenese symbol
+	// NOTE : this is Dniscript
+	text = replace(text, [
+		[/red/g, '<ä>'],
+		[/orange/g, '<Ä>'],
+		[/yellow/g, '<ö>'],
+		[/green/g, '<Ö>'],
+		[/blue/g, '<ü>'],
+		[/purple/g, '<Ü>'],
+	]);
 
 	// Replace numbers by their base25 symbol
 	text = text.replace(/\d+/g, match => toBase25(parseInt(match, 10)));
 
-	/*
-	 * // Commented : this is D'ni Script, not Dnifont
-	 * // TODO switch to dniscript maybe ?
-	 *
-	// Replace colors by their rivenese symbol
-	text = text.replace(/red/g, '<ä>');
-	text = text.replace(/orange/g, '<Ä>');
-	text = text.replace(/yellow/g, '<ö>');
-	text = text.replace(/green/g, '<Ö>');
-	text = text.replace(/blue/g, '<ü>');
-	text = text.replace(/purple/g, '<Ü>');
-	*/
+	// Convert from X format to Dnifont
+	switch(format) {
+		case 'dnifont':
+			break;
+		case 'dniscript':
+			// Don't convert from Dnifont to Dniscript
+			return;
+		case 'nts':
+			text = NTStoDnifont(lower(text));
+			break;
+		case 'ots':
+		default:
+			text = OTStoDnifont(lower(text));
+	}
 
-	return text;
+	// Convert Dnifont to Dniscript
+	return replace(text, [
+		[/å(?![^<]*>)/g, '<q>'],
+		[/\'|\,(?![^<]*>)/g, '<‘>'],
+
+		// Numerals
+		[/\\(?![^<]*>)/g, '<{>'],
+		[/{(?![^<]*>)/g, '<}>'],
+		[/}(?![^<]*>)/g, '<\\>'],
+	], true);
 }
 
 function NTStoDnifont(text) {
-	text = miscToDnifont(text);
-
-	const characters = [
+	return replace(text, [
 		[/a(?![^<]*>)/g, '<a>'],
 		[/á(?![^<]*>)/g, '<I>'],
-		[/æ(?![^<]*>)/g, '<å>'], // would be q in dniscript TODO
+		[/æ(?![^<]*>)/g, '<å>'],
 		[/c(?![^<]*>)/g, '<x>'],
 		[/ç(?![^<]*>)/g, '<c>'],
 		[/d(?![^<]*>)/g, '<D>'],
@@ -83,20 +110,11 @@ function NTStoDnifont(text) {
 		[/x(?![^<]*>)/g, '<k>'],
 		[/þ(?![^<]*>)/g, '<T>'],
 		[/~(?![^<]*>)/g, '<->'],
-	];
-
-	for(let replacement of characters) {
-		text = text.replace(replacement[0], replacement[1]);
-	}
-	text = text.replace(/[<>]/g, '');
-
-	return text;
+	], true);
 }
 
 function OTStoDnifont(text) {
-	text = miscToDnifont(text);
-
-	const characters = [
+	return replace(text, [
 		[/ah(?![^<]*>)/g, '<a>'],
 		[/ai(?![^<]*>)/g, '<A>'],
 		[/ay(?![^<]*>)/g, '<A>'],
@@ -113,23 +131,18 @@ function OTStoDnifont(text) {
 		[/ts(?![^<]*>)/g, '<x>'],
 		[/uh(?![^<]*>)/g, '<u>'],
 		[/i(?!['\w])(?![^<]*>)/g, '<E>'], // convert a final 'i' to 'ee', to account for proper nouns such as "D'ni"
-		[/a(?![^<]*>)/g, '<å>'], // would be q in dniscript TODO
+		[/a(?![^<]*>)/g, '<å>'],
 		[/d(?![^<]*>)/g, '<D>'],
 		[/í(?![^<]*>)/g, '<I>'],
 		[/k(?![^<]*>)/g, '<K>'],
-	];
-
-	for(let replacement of characters) {
-		text = text.replace(replacement[0], replacement[1]);
-	}
-	text = text.replace(/[<>]/g, '');
-
-	return text;
+	], true);
 }
 
 function replaceMsg(msg, text) {
 	let image = text2png(text, {
-		font: '18px Dnifont',
+		font: '24px Dniscript',
+		localFontPath: 'dniscript.ttf',
+		localFontName: 'Dniscript',
 		textColor: 'black',
 		bgColor: 'white',
 		padding: 10,
@@ -147,5 +160,5 @@ function replaceMsg(msg, text) {
 	}
 }
 
-module.exports = { toBase25, OTStoDnifont, NTStoDnifont, replaceMsg };
+module.exports = { toBase25, toDniscript, replaceMsg };
 

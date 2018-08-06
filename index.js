@@ -10,8 +10,8 @@ function print_help(msg) {
 		embed: {
 			fields: [
 				{
-					name: '!dni [ots|nts] text',
-					value: 'Print text in D\'ni characters using OTS (default) or NTS format.'
+					name: '!dni [ots|nts|dnifont|dniscript] text',
+					value: 'Print text in D\'ni characters using the given format (OTS by default).'
 				},
 				{
 					name: '!dni time',
@@ -38,12 +38,12 @@ function python(script, args, cb) {
 
 function getArgType(args) {
 	switch(args[0]) {
+		case 'dnifont':
+		case 'dniscript':
 		case 'nts':
-			args.shift(1);
-			return 'nts';
 		case 'ots':
 			args.shift(1);
-			return 'ots';
+			return args[0];
 		case 'time':
 			return 'time';
 		case 'translate':
@@ -76,11 +76,6 @@ function translate(msg, args) {
 
 client.on('ready', () => {
 	console.log(`Logged in as ${client.user.tag}`);
-
-	let starry_expanse = client.guilds.find('id', '434645974346891267');
-	if(!starry_expanse) {
-		console.log('Starry Expanse guild not found ! :(');
-	}
 });
 
 client.on('error', err => {
@@ -98,13 +93,13 @@ client.on('message', msg => {
 				// Remove "!dni " from args
 				args.shift(1);
 
-				switch(getArgType(args)) {
+				const type = getArgType(args);
+				switch(type) {
+					case 'dnifont':
+					case 'dniscript':
 					case 'nts':
-						var text = dnify.NTStoDnifont(args.join(' '));
-						dnify.replaceMsg(msg, text);
-						break;
 					case 'ots':
-						var text = dnify.OTStoDnifont(args.join(' '));
+						var text = dnify.toDniscript(args.join(' '), type);
 						dnify.replaceMsg(msg, text);
 						break;
 					case 'time':
