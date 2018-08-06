@@ -112,6 +112,7 @@ function OTStoDnifont(text) {
 		[/th(?![^<]*>)/g, '<T>'],
 		[/ts(?![^<]*>)/g, '<x>'],
 		[/uh(?![^<]*>)/g, '<u>'],
+		[/i(?!['\w])(?![^<]*>)/g, '<E>'], // convert a final 'i' to 'ee', to account for proper nouns such as "D'ni"
 		[/a(?![^<]*>)/g, '<å>'], // would be q in dniscript TODO
 		[/d(?![^<]*>)/g, '<D>'],
 		[/í(?![^<]*>)/g, '<I>'],
