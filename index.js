@@ -62,14 +62,11 @@ function translate(msg, args) {
 
 	var ots = getArgType(args) == 'ots';
 	var text = args.join(' ');
-	args = ots ? ['-o', text] : [text];
+	args = ots ? [text] : ['-n', text];
 
 	console.log(`Translated "${text}" (${ots ? 'OTS' : 'NTS'}) for ${msg.author.username}`);
 	python('dnitransl.py', args, (err, res) => {
 		if(err) throw err;
-
-		// Print second line only
-		if(res.length > 1) res.shift(1);
 		msg.channel.send(res);
 	});
 }
