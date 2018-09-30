@@ -120,7 +120,13 @@ function convert_text(text, format_from, format_to) {
 	}
 
 	for(let line of letter_translation_table) {
-		let regex = new RegExp('[' + line[from] + '](?![^<]*>)', 'g');
+		// Handle special characters
+		let character = line[from];
+		if(character.length == 1) {
+			character = '[' + character + ']';
+		}
+		
+		let regex = new RegExp(character + '(?![^<]*>)', 'g');
 		text = text.replace(regex, match => '<' + line[to] + '>');
 	}
 
