@@ -96,7 +96,7 @@ client.on('message', msg => {
 					case 'dniscript':
 					case 'nts':
 					case 'ots':
-						var text = dnify.toDniscript(args.join(' '), type);
+						var text = dnify.convert_all(args.join(' '), type, 'dniscript lm');
 						dnify.replaceMsg(msg, text);
 						break;
 					case 'time':
