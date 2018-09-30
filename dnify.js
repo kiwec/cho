@@ -118,10 +118,14 @@ function convert_text(text, format_from, format_to) {
 		text = text.replace(/i(?!['\w])(?![^<]*>)/g, 'ee');
 	}
 
-	for(let line of letter_translation_table) {
-		let regex = new Regex(line[from] + '(?![^<]*>)', 'g');
-		text = text.replace(regex, match => '<' + line[to] + '>');
-	}
+	text = text.replace(/\S(?![^<]*>)/g, match => {
+		for(let line of letter_translation_table) {
+			if(line[from] == match) {
+				return '<' + line[to] + '>';
+			}
+		}
+		return match;
+	});
 
 	return text;
 }
@@ -141,10 +145,14 @@ function convert_number(number, format_from, format_to) {
 		number = parseInt(number, 10).toString(25);
 	}
 
-	for(let line of number_translation_table) {
-		let regex = new Regex(line[from] + '(?![^<]*>)', 'g');
-		number = number.replace(regex, match => '<' + line[to] + '>');
-	}
+	text = text.replace(/\S(?![^<]*>)/g, match => {
+		for(let line of number_translation_table) {
+			if(line[from] == match) {
+				return '<' + line[to] + '>';
+			}
+		}
+		return match;
+	});
 
 	// Convert to base10 if needed
 	if(format_to == 'base10') {
@@ -163,8 +171,8 @@ function convert_color(color, format_from, format_to) {
 	let to = formats.indexOf(format_to);
 	if(to == -1) throw new Error(`Invalid format "${format_to}"`);
 
-	for(let line of number_translation_table) {
-		let regex = new Regex(line[from] + '(?![^<]*>)', 'gi');
+	for(let line of color_translation_table) {
+		let regex = new RegExp(line[from] + '(?![^<]*>)', 'gi');
 		color = color.replace(regex, match => '<' + line[to] + '>');
 	}
 
