@@ -109,6 +109,7 @@ function convert_text(text, format_from, format_to) {
 	let to = formats.indexOf(format_to);
 	if(to == -1) throw new Error(`Invalid format "${format_to}"`);
 
+	// Convert to lowercase when possible
 	if(['ots', 'nts', 'dniscript lm'].includes(format_from)) {
 		text = lower(text);
 	}
@@ -118,14 +119,10 @@ function convert_text(text, format_from, format_to) {
 		text = text.replace(/i(?!['\w])(?![^<]*>)/g, 'ee');
 	}
 
-	text = text.replace(/\S(?![^<]*>)/g, match => {
-		for(let line of letter_translation_table) {
-			if(line[from] == match) {
-				return '<' + line[to] + '>';
-			}
-		}
-		return match;
-	});
+	for(let line of letter_translation_table) {
+		let regex = new RegExp('[' + line[from] + '](?![^<]*>)', 'g');
+		text = text.replace(regex, match => '<' + line[to] + '>');
+	}
 
 	return text;
 }
@@ -145,14 +142,10 @@ function convert_number(number, format_from, format_to) {
 		number = parseInt(number, 10).toString(25);
 	}
 
-	text = text.replace(/\S(?![^<]*>)/g, match => {
-		for(let line of number_translation_table) {
-			if(line[from] == match) {
-				return '<' + line[to] + '>';
-			}
-		}
-		return match;
-	});
+	for(let line of number_translation_table) {
+		let regex = new RegExp('[' + line[from] + '](?![^<]*>)', 'g');
+		number = number.replace(regex, match => '<' + line[to] + '>');
+	}
 
 	// Convert to base10 if needed
 	if(format_to == 'base10') {
