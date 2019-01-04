@@ -1,10 +1,63 @@
 const Discord = require('discord.js');
-const client = new Discord.Client();
-
 const PythonShell = require('python-shell');
-
 const dnify = require('./dnify.js');
 const welcome = require('./welcome.js');
+
+let clients = {};
+
+async function init() {
+	const config = require('./config.json');
+	for(let bot of config.bots) {
+		clients[bot] = new Discord.Client();
+		clients[bot].on('ready', () => console.log(`${clients[bot].user.tag} is now logged in.`));
+		clients[bot].on('error', console.error);
+		await clients[bot].login(config.bots[bot]);
+	}
+	
+	clients.cho.on('guildMemberAdd', member => welcome(clients, member, 'joined'));
+	clients.cho.on('guildMemberRemove', member => welcome(clients, member, 'left'));
+	
+	clients.cho.on('message', msg => {
+		try {
+			if(msg.content.indexOf('!dni') == 0) {
+				let args = msg.content.split(' ');
+	
+				if(args.length == 1) {
+					print_help(msg);
+				} else {
+					// Remove "!dni " from args
+					args.shift(1);
+	
+					const type = getArgType(args);
+					switch(type) {
+						case 'dnifont':
+						case 'dniscript':
+						case 'nts':
+						case 'ots':
+							var text = dnify.convert_all(args.join(' '), type, 'dniscript lm');
+							dnify.replaceMsg(msg, text);
+							break;
+						case 'time':
+							console.log(`Printed D'ni time for ${msg.author.username}`);
+							python('dnitime.py', null, (err, res) => {
+								if(err) throw err;
+								msg.channel.send(res);
+							});
+							break;
+						case 'translate':
+							translate(msg, args);
+							break;
+						default:
+							// Never reached
+					}
+				}
+			}
+		} catch(err) {
+			msg.channel.send('Sorry, something unexpected happened.');
+			console.error(err);
+		}
+	});
+}
 
 function print_help(msg) {
 	msg.channel.send({
@@ -71,63 +124,3 @@ function translate(msg, args) {
 		msg.channel.send(res);
 	});
 }
-
-client.on('ready', () => {
-	console.log(`Logged in as ${client.user.tag}`);
-});
-
-client.on('error', err => {
-	console.log('Connection error.');
-});
-
-client.on('guildMemberAdd', member => {
-	welcome(client, member);
-});
-
-client.on('guildMemberRemove', member => {
-	welcome(client, member, false);
-});
-
-client.on('message', msg => {
-	try {
-		if(msg.content.indexOf('!dni') == 0) {
-			let args = msg.content.split(' ');
-
-			if(args.length == 1) {
-				print_help(msg);
-			} else {
-				// Remove "!dni " from args
-				args.shift(1);
-
-				const type = getArgType(args);
-				switch(type) {
-					case 'dnifont':
-					case 'dniscript':
-					case 'nts':
-					case 'ots':
-						var text = dnify.convert_all(args.join(' '), type, 'dniscript lm');
-						dnify.replaceMsg(msg, text);
-						break;
-					case 'time':
-						console.log(`Printed D'ni time for ${msg.author.username}`);
-						python('dnitime.py', null, (err, res) => {
-							if(err) throw err;
-							msg.channel.send(res);
-						});
-						break;
-					case 'translate':
-						translate(msg, args);
-						break;
-					default:
-						// Never reached
-				}
-			}
-		}
-	} catch(err) {
-		msg.channel.send('Sorry, something unexpected happened.');
-		console.error(err);
-	}
-});
-
-client.login(require('./config.json').token);
-

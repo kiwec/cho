@@ -1,10 +1,10 @@
-[	
-	[
-		["Cho", "@name Cho..?"],
-		["Gehn", "I apologize for the cage, @name!"],
-		["Atrus", "Who the devil are you, @name?!"]
+{
+	"joined": [
+		["cho", "@name Cho..?"],
+		["gehn", "I apologize for the cage, @name!"],
+		["atrus", "Who the devil are you, @name?!"]
 	],
-	[
-		["Atrus", "@name just left the server. Goodbye, my friend."]
+	"left": [
+		["atrus", "@name just left the server. Goodbye, my friend."]
 	]
-]
+}
