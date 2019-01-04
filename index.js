@@ -7,7 +7,7 @@ let clients = {};
 
 async function init() {
 	const config = require('./config.json');
-	for(let bot of config.bots) {
+	for(let bot in config.bots) {
 		clients[bot] = new Discord.Client();
 		clients[bot].on('ready', () => console.log(`${clients[bot].user.tag} is now logged in.`));
 		clients[bot].on('error', console.error);
@@ -124,3 +124,5 @@ function translate(msg, args) {
 		msg.channel.send(res);
 	});
 }
+
+init();
