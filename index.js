@@ -4,6 +4,7 @@ const client = new Discord.Client();
 const PythonShell = require('python-shell');
 
 const dnify = require('./dnify.js');
+const welcome = require('./welcome.js');
 
 function print_help(msg) {
 	msg.channel.send({
@@ -77,6 +78,10 @@ client.on('ready', () => {
 
 client.on('error', err => {
 	console.log('Connection error.');
+});
+
+client.on('guildMemberAdd', member => {
+	welcome(client, member);
 });
 
 client.on('message', msg => {

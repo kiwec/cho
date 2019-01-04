@@ -20,7 +20,7 @@ Create config.json as such :
 }
 ```
 
-node-canvas may require some dependencies you have to install manually.
+node-canvas requires some dependencies you may have to install manually.
 Follow [these instructions](https://github.com/Automattic/node-canvas/wiki) for more information.
 
 python2 and python3 are required. Default python interpreter doesn't matter.
