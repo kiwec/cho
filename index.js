@@ -84,6 +84,10 @@ client.on('guildMemberAdd', member => {
 	welcome(client, member);
 });
 
+client.on('guildMemberRemove', member => {
+	welcome(client, member, false);
+});
+
 client.on('message', msg => {
 	try {
 		if(msg.content.indexOf('!dni') == 0) {
