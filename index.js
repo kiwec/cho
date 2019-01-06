@@ -13,21 +13,21 @@ async function init() {
 		clients[bot].on('error', console.error);
 		await clients[bot].login(config.bots[bot]);
 	}
-	
+
 	clients.cho.on('guildMemberAdd', member => welcome(clients, member, 'joined'));
 	clients.cho.on('guildMemberRemove', member => welcome(clients, member, 'left'));
-	
+
 	clients.cho.on('message', msg => {
 		try {
 			if(msg.content.indexOf('!dni') == 0) {
 				let args = msg.content.split(' ');
-	
+
 				if(args.length == 1) {
 					print_help(msg);
 				} else {
 					// Remove "!dni " from args
 					args.shift(1);
-	
+
 					const type = getArgType(args);
 					switch(type) {
 						case 'dnifont':
