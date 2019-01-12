@@ -5,6 +5,6 @@
 		["atrus", "Who the devil are you, @name?!"]
 	],
 	"left": [
-		["atrus", "@name just left the server. Goodbye, my friend."]
+		["atrus", "**@tag** just left the server. Goodbye, my friend."]
 	]
 }

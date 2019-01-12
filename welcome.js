@@ -15,7 +15,7 @@ async function welcome(clients, member, status) {
 	}
 
 	try {
-		let msg = message[1].replace('@name', member);
+		let msg = message[1].replace('@name', member).replace('@tag', member.user.tag);
 		if(status == 'joined') {
 			msg += ' Welcome to ***The Starry Expanse Project\'s*** official Discord server!\nPlease make sure to read the rules!';
 		}
