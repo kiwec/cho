@@ -26,7 +26,7 @@ async function init() {
 					print_help(msg);
 				} else {
 					// Remove "!dni " from args
-					args.shift(1);
+					args.shift();
 
 					const type = getArgType(args);
 					switch(type) {
@@ -96,13 +96,11 @@ function getArgType(args) {
 		case 'dniscript':
 		case 'nts':
 		case 'ots':
-			args.shift(1);
-			return args[0];
+			return args.shift();
 		case 'time':
 			return 'time';
 		case 'translate':
-			args.shift(1);
-			return 'translate';
+			return args.shift();
 		default:
 			return 'ots';
 	}
