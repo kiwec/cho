@@ -12,19 +12,6 @@ OTS/NTS/other mappings are based on [this page](http://www.mystembassy.net/downl
 npm install
 ```
 
-Create config.json as such :
-
-```json
-{
-	"bots": {
-		"atrus": "discord bot A token here",
-		"cho": "discord bot B token here"
-	}
-}
-```
-
-The only required bot token is "cho", if you only use the "cho" lines in `welcome_messages.json`.
-
 node-canvas requires some dependencies you may have to install manually.
 Follow [these instructions](https://github.com/Automattic/node-canvas/wiki) for more information.
 
@@ -33,6 +20,7 @@ python2 and python3 are required. Default python interpreter doesn't matter.
 ### Running
 
 ```sh
-node index.js
+CHO_TOKEN="..." ATRUS_TOKEN="..." GEHN_TOKEN="..." node index.js
 ```
 
+The only required token is "CHO_TOKEN", if you only use the "cho" lines in `welcome_messages.json`.

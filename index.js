@@ -6,12 +6,20 @@ const welcome = require('./welcome.js');
 let clients = {};
 
 async function init() {
-	const config = require('./config.json');
-	for(let bot in config.bots) {
-		clients[bot] = new Discord.Client();
-		clients[bot].on('ready', () => console.log(`${clients[bot].user.tag} is now logged in.`));
-		clients[bot].on('error', console.error);
-		await clients[bot].login(config.bots[bot]);
+	if(!process.env.CHO_TOKEN) {
+		throw new Error("The 'CHO_TOKEN' environment variable is required.");
+	}
+
+	for(let bot_name of ["cho", "atrus", "gehn"]) {
+		// To allow being run from Heroku, bot tokens are stored in environment variables.
+		// As an example, Cho's token is in the "CHO_TOKEN" environment variable.
+		const bot_token = process.env[`${bot_name.toUpperCase()}_TOKEN`];
+		if(bot_token) {
+			clients[bot_name] = new Discord.Client();
+			clients[bot_name].on('ready', () => console.log(`${clients[bot_name].user.tag} is now logged in.`));
+			clients[bot_name].on('error', console.error);
+			await clients[bot_name].login(bot_token);
+		}
 	}
 
 	clients.cho.on('guildMemberAdd', member => welcome(clients, member, 'joined'));

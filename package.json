@@ -1,10 +1,10 @@
 {
   "name": "cho",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Discord bot for the Starry Expanse server.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
